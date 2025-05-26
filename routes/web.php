@@ -30,7 +30,7 @@ EOT;
 
 
 Route::get('/referrals/gi/new', GiBookingFormComponent::class)
-    ->middleware(['auth']);
+    ->middleware(['auth'])->name('referral-create');
 
 
 
