@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('testtest'),
                 'group'    => $commonGroups,
             ],
-            // 2) Charles Petrini Poli
+
             [
                 'email'    => 'charlespp42@gmail.com',
                 'name'     => 'Charles Petrini Poli',
@@ -41,83 +41,35 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('charles.petrini.poli.demo!'),
                 'group'    => $commonGroups,
             ],
-            // 3) Liz Arcaro
+
             [
-                'email'    => 'Liz.Arcaro@mainehealth.org',
-                'name'     => 'Liz Arcaro',
-                'password' => Hash::make('liz.arcaro.demo!'),
+                'email'    => 'davidsone@northernlight.org',
+                'name'     => 'Eva Davidson',
+                'password' => Hash::make('Eva.Davidson.demo!'),
                 'group'    => $commonGroups,
             ],
-            // 4) Susan Whitney
+  
             [
-                'email'    => 'Susan.Whitney@mainehealth.org',
-                'name'     => 'Susan Whitney',
-                'password' => Hash::make('susan.whitney.demo!'),
+                'email'    => 'lunta@northernlight.org',
+                'name'     => 'Amanda Lunt',
+                'password' => Hash::make('Amanda.Lunt.demo!'),
                 'group'    => $commonGroups,
             ],
-            // 5) E Brondolo
+
             [
                 'email'    => 'e.brondolo@northeastern.edu',
                 'name'     => 'E Brondolo',
                 'password' => Hash::make('e.brondolo.demo!'),
                 'group'    => $commonGroups,
             ],
-            // 6) T Peverelli
+          
             [
-                'email'    => 'tpeverelli@hub.healthcare',
-                'name'     => 'T Peverelli',
-                'password' => Hash::make('t.peverelli.demo!'),
+                'email'    => 'stuarts@northernlight.org',
+                'name'     => 'Shelly Stuart',
+                'password' => Hash::make('Shelly.Stuart.demo!'),
                 'group'    => $commonGroups,
             ],
-            // 7) David Polisner
-            [
-                'email'    => 'David.Polisner@mainehealth.org',
-                'name'     => 'David Polisner',
-                'password' => Hash::make('david.polisner.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 8) Amanda Roberts
-            [
-                'email'    => 'Amanda.Roberts4@mainehealth.org',
-                'name'     => 'Amanda Roberts',
-                'password' => Hash::make('amanda.roberts.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 9) Ashley Anderson
-            [
-                'email'    => 'Ashley.Anderson@mainehealth.org',
-                'name'     => 'Ashley Anderson',
-                'password' => Hash::make('ashley.anderson.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 10) Molly Dow
-            [
-                'email'    => 'Molly.Dow@mainehealth.org',
-                'name'     => 'Molly Dow',
-                'password' => Hash::make('molly.dow.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 11) Brandon McCrossin
-            [
-                'email'    => 'Brandon.McCrossin@mainehealth.org',
-                'name'     => 'Brandon McCrossin',
-                'password' => Hash::make('brandon.mccrossin.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 12) Heidi Wierman
-            [
-                'email'    => 'Heidi.Wierman@mainehealth.org',
-                'name'     => 'Heidi Wierman',
-                'password' => Hash::make('heidi.wierman.demo!'),
-                'group'    => $commonGroups,
-            ],
-            // 13) Richard Marino
-            [
-                'email'    => 'Richard.Marino@mainehealth.org',
-                'name'     => 'Richard Marino',
-                'password' => Hash::make('richard.marino.demo!'),
-                'group'    => $commonGroups,
-            ],
+           
         ];
 
         foreach ($usersData as $userData) {
