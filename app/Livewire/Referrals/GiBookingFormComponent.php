@@ -88,8 +88,10 @@ class GiBookingFormComponent extends Component
             }
         }
 
-        session()->flash('success', 'Referral submitted successfully.');
-        return redirect()->to('/referrals');
+
+    session()->flash('success', 'Referral submitted successfully.');
+	$this->redirectRoute('referrals.thank-you'); 
+    return redirect()->route('referrals.thank-you');
     }
 
     public function render()

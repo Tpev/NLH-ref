@@ -29,6 +29,6 @@ class ReferralSubmissionController extends Controller
             'form_data' => json_encode($request->except(['_token'])), // store all form data as JSON
         ]);
 
-        return redirect()->back()->with('success', 'Referral submitted successfully.');
+        return redirect()->route('referrals.thank-you');
     }
 }
