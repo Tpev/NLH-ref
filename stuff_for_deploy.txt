@@ -65,7 +65,7 @@ sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
 
 # Install PHP 8.3 and necessary extensions
-sudo apt install -y php8.3 php8.3-fpm php8.3-mysql php8.3-xml php8.3-mbstring php8.3-curl php8.3-zip php8.3-gd php8.3-bcmath php8.3-tokenizer php8.3-cli php8.3-json php8.3-common php8.3-intl
+sudo apt install -y php8.3 php8.3-fpm php8.3-mysql php8.3-xml php8.3-mbstring php8.3-curl php8.3-zip php8.3-gd php8.3-bcmath php8.3-tokenizer php8.3-cli php8.3-common php8.3-intl
 
 # Verify PHP installation
 php -v
@@ -168,7 +168,7 @@ Copier
 cd /var/www
 
 # Clone your repository (replace with your repository URL)
-git clone git@github.com:Tpev/hub-ref-stage.git hub-ref
+git clone git@github.com:Tpev/NLH-ref.git nlh-ref
 
 # Navigate to the application directory
 cd hub-ref
@@ -310,16 +310,16 @@ Create a new Nginx configuration file for your Laravel application.
 bash
 Copier
 # Create a new server block file
-sudo nano /etc/nginx/sites-available/hub-ref
+sudo nano /etc/nginx/sites-available/nlh-ref
 Insert the Following Configuration:
 
 nginx
 Copier
 server {
     listen 80;
-    server_name demo-mhg.hub.healthcare;
+    server_name demo-nlhgi.hub.healthcare;
 
-    root /var/www/hub-ref/public;
+    root /var/www/nlh-ref/public;
     index index.php index.html index.htm;
 
     add_header X-Frame-Options "SAMEORIGIN";
@@ -361,7 +361,7 @@ b. Enable the Server Block
 bash
 Copier
 # Create a symbolic link to enable the site
-sudo ln -s /etc/nginx/sites-available/hub-ref /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/nlh-ref /etc/nginx/sites-enabled/
 
 # Test Nginx configuration
 sudo nginx -t
@@ -380,7 +380,7 @@ b. Obtain and Install SSL Certificate
 bash
 Copier
 # Run Certbot to obtain and install the certificate
-sudo certbot --nginx -d demo-mhg.hub.healthcare
+sudo certbot --nginx -d demo-nlhgi.hub.healthcare
 Follow the Prompts:
 
 Enter your email address.

@@ -12,11 +12,41 @@ Route::post('/referrals/gi/store', [ReferralSubmissionController::class, 'store'
 
 Route::get('/test-nlp', function () {
     $text = <<<EOT
-The patient is a 67-year-old male with multiple chronic conditions. He has a history of type 2 diabetes, poorly controlled, with a recent hemoglobin A1C of 9.2. He is also diagnosed with congestive heart failure, with an ejection fraction of 25% documented in the last echocardiogram. He was treated for a stroke approximately 6 weeks ago and has residual left-sided weakness.
+Patient 3: Caleb Johnson – Pre-operative Clearance Note
+Date: 27 May 2025 – Author: PCP
 
-Pulmonary history includes COPD and oxygen dependency at home, with baseline resting SpO2 at 91%.
+Chief Reason for Visit
+Clearance for arthroscopic right rotator-cuff repair (planned outpatient general anesthesia with interscalene block).
 
-Patient has stage 4 chronic kidney disease and is not currently on dialysis, though nephrology follow-up is ongoing. He also has a BMI of 53, is non-ambulatory, and requires a Hoyer lift for transfers. His mobility limitations are complicated by a diagnosis of ankylosing spondylitis, leading to a limited range of motion in the neck and spine.
+History of Present Illness
+63-year-old male with chronic right-shoulder pain refractory to PT and injections; surgery scheduled in 4 weeks.
+
+Past Medical History
+
+Moderate aortic stenosis (valve area 1.3 cm², mean gradient 22 mmHg) – last echo 01 Nov 2024.
+
+Mild pulmonary hypertension (PASP 40 mmHg).
+
+Obstructive sleep apnea—CPAP compliant (>6 h/night download reviewed).
+
+Type 2 diabetes mellitus—fair control, HbA1c 8.0 % (Mar 2025).
+
+Hyperlipidemia, well controlled.
+
+Medications / Allergies
+Metformin 1000 mg BID, Lisinopril 10 mg QD, Atorvastatin 40 mg QD. No allergies.
+
+Social / Functional
+BMI 49 kg/m² (weight 148 kg, height 1.74 m). Ambulates unaided; plays 9-hole golf walking (METs ≈ 5). Never smoker. Wife available full-time for 1 week post-op.
+
+Review of Systems
+Denies exertional chest pain, syncope, or PND. Mild exertional dyspnea on hills.
+
+Physical Exam
+BP 130/80 mmHg; HR 74; SpO₂ 95 % RA. Grade 2/6 mid-systolic murmur at RUSB without radiation. Lungs clear. Neck ROM full; Mallampati II. Right shoulder limited abduction with crepitus.
+
+Investigations
+Echo 01 Nov 2024 reviewed above—no change in symptoms since. CMP/CBC WNL.
 EOT;
 
     $response = Http::post('http://localhost:8001/analyze', [
