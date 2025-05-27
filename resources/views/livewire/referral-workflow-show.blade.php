@@ -1,3 +1,5 @@
+<div x-data="{ showIntake: false, expanded: false }" class="relative min-h-screen">
+
 <div class="space-y-8 p-6 max-w-7xl mx-auto">
     @if(session()->has('success'))
         <div class="p-3 mb-4 text-green-800 bg-green-100 rounded">
@@ -20,9 +22,26 @@
     <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
         Patient Referral #{{ $referral->id }} – Details
     </h2>
+<button
+  @click="showIntake = !showIntake"
+  :aria-label="showIntake ? 'Hide intake details' : 'Show intake details'"
+  class="flex items-center space-x-2 p-2 bg-green-600 text-white rounded shadow
+         hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+>
+  <i
+    :class="showIntake
+      ? 'fa-solid fa-chevron-right rotate-180 transition-transform duration-200'
+      : 'fa-solid fa-chevron-left transition-transform duration-200'"
+    class="w-4 h-4"
+  ></i>
+  <span x-text="showIntake ? 'Hide Details' : 'Referral Details'" class="text-sm font-medium"></span>
+</button>
+
+
 </div>
 
     <section class="space-y-6">
+
         @if($referral->workflow && $referral->workflow->stages->isNotEmpty())
             @php
                 $currentStageId = $referral->current_stage_id ?? null;
@@ -591,5 +610,109 @@ Livewire.hook('message.processed', () => {
 
 
 
+
 </div>
 
+@php
+  // alias for your Livewire data
+  $intake = $intakeData;
+
+  // we no longer need the full labels map, we’ll inline headings
+@endphp
+
+<aside
+  x-show="showIntake"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="translate-x-full"
+  x-transition:enter-end="translate-x-0"
+  x-transition:leave="transition ease-in duration-200"
+  x-transition:leave-start="translate-x-0"
+  x-transition:leave-end="translate-x-full"
+  :class="expanded 
+    ? 'fixed inset-0 bg-white dark:bg-gray-900 z-50 p-6 overflow-y-auto' 
+    : 'fixed inset-y-0 right-0 w-80 bg-white dark:bg-gray-800 shadow-lg overflow-y-auto'"
+  class="flex flex-col"
+>
+  {{-- Header --}}
+  <div class="flex items-center justify-between mb-4">
+    <h3 class="text-xl font-bold text-green-700 flex items-center">
+      <i class="fa-solid fa-id-card-clip mr-2"></i> Intake Details
+    </h3>
+    <div class="flex space-x-2">
+      <button @click="expanded = !expanded" class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+        <i :class="expanded ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
+      </button>
+      <button @click="showIntake = false" class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+        <i class="fa-solid fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="space-y-6 pb-6">
+    {{-- Patient Info --}}
+    <div>
+      <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Patient Info</h4>
+      <div class="space-y-2">
+        @foreach(['last_name'=>'Last Name','first_name'=>'First Name','dob'=>'DOB','gender'=>'Gender','primary_phone'=>'Phone'] as $key=>$label)
+          @if(!empty($intake[$key]))
+            <div class="flex justify-between bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+              <dt class="text-gray-600">{{ $label }}</dt>
+              <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $intake[$key] }}</dd>
+            </div>
+          @endif
+        @endforeach
+      </div>
+    </div>
+
+    {{-- Referring Provider --}}
+    <div>
+      <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Referring Provider</h4>
+      <div class="space-y-2">
+        @foreach(['referring_physician'=>'Provider','referring_facility'=>'Facility','referring_phone'=>'Phone'] as $key=>$label)
+          @if(!empty($intake[$key]))
+            <div class="flex justify-between bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+              <dt class="text-gray-600">{{ $label }}</dt>
+              <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $intake[$key] }}</dd>
+            </div>
+          @endif
+        @endforeach
+      </div>
+    </div>
+
+    {{-- Clinical Summary --}}
+    <div>
+      <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Clinical</h4>
+      <div class="space-y-2">
+        @if(!empty($intake['gi_procedures']))
+          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+            <dt class="text-gray-600">Procedures</dt>
+            <dd class="font-medium text-gray-900 dark:text-gray-100">{{ implode(', ', $intake['gi_procedures']) }}</dd>
+          </div>
+        @endif
+        @if(!empty($intake['reason']))
+          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+            <dt class="text-gray-600">Reason</dt>
+            <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $intake['reason'] }}</dd>
+          </div>
+        @endif
+        @if(!empty($intake['diagnosis']))
+          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+            <dt class="text-gray-600">Diagnosis</dt>
+            <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $intake['diagnosis'] }}</dd>
+          </div>
+        @endif
+        @if(!empty($intake['clinical_summary']))
+          <div class="bg-gray-50 dark:bg-gray-700 px-4 py-2 rounded-lg">
+            <dt class="text-gray-600">Summary</dt>
+            <dd class="font-medium text-gray-900 dark:text-gray-100 whitespace-pre-line">
+              {{ $intake['clinical_summary'] }}
+            </dd>
+          </div>
+        @endif
+      </div>
+    </div>
+  </div>
+</aside>
+
+
+</div>

@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Http;
 class ReferralWorkflowShow extends Component
 {
     use WithFileUploads;
-
+ public array $intakeData = [];
     /** The ID of the referral we’re viewing. */
     public $referralId;
 
@@ -64,15 +64,18 @@ public function mount($referralId)
         'comments.user',
     ])->findOrFail($referralId);
 
-    // Extract clinical summary from form_data
-    $data = json_decode($this->referral->form_data, true);
-    $summary = $data['clinical_summary'] ?? '';
+    /* keep the full JSON for later */
+    $this->intakeData = json_decode($this->referral->form_data, true) ?? [];
 
-    // Call NLP API
+    /* you can still pull just the summary for the NLP call */
+    $summary = $this->intakeData['clinical_summary'] ?? '';
+
+    // Call NLP API as you already do …
     $response = Http::timeout(10)->post('http://localhost:8001/analyze', [
         'text' => $summary
     ]);
 
+    /* unchanged ↓ */
     if ($response->successful()) {
         $matches = $response->json('matches') ?? [];
         $this->mlSuggestions = [];
@@ -80,12 +83,13 @@ public function mount($referralId)
         foreach ($matches as $match) {
             $criterion = $match['criterion'];
             $this->mlSuggestions[$criterion] = [
-                'value' => $match['negated'] ? 'no' : 'yes',
-                'reason' => $match['context_sentence']
+                'value'  => $match['negated'] ? 'no' : 'yes',
+                'reason' => $match['context_sentence'],
             ];
         }
     }
 }
+
 
     /**
      * Reload referral relationships
@@ -419,6 +423,7 @@ public function saveCheckbox($stepId)
         return view('livewire.referral-workflow-show', [
             'referral'       => $this->referral,
             'stepProgresses' => $this->referral->progress,
+			'intakeData'     => $this->intakeData, 
         ]);
     }
 public function saveMedRec($stepId)
