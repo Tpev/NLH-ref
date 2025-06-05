@@ -1,153 +1,114 @@
-<!-- Referrals Table -->
+<!-- Referrals Table (with duplicate badge) -->
 <div>
+@php
+    /*
+     |--------------------------------------------------------------
+     | Build a quick “duplicate” lookup table for this page only.
+     | Key = lower-case patient name + dob   →   count
+     |--------------------------------------------------------------
+     */
+    $dupCounts = [];
+    foreach ($referrals as $r) {
+        $key = strtolower(trim($r->patient_name)).'|'.($r->dob ?? '');
+        $dupCounts[$key] = ($dupCounts[$key] ?? 0) + 1;
+    }
+@endphp
+
 <div class="overflow-x-auto bg-white rounded-lg shadow">
     <table class="min-w-full divide-y divide-green-200 text-sm">
         <thead class="bg-green-50 text-green-900 uppercase text-xs font-semibold tracking-wider">
             <tr>
-                <!-- ID -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('id')">
-                    ID
-                    @if($sortField === 'id')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <!-- sortable headers (unchanged) -->
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('id')">
+                    ID   @if($sortField==='id'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Patient Name -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('patient_name')">
-                    Patient Name
-                    @if($sortField === 'patient_name')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('patient_name')">
+                    Patient Name   @if($sortField==='patient_name'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-
-                <!-- DOB -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('dob')">
-                    DOB
-                    @if($sortField === 'dob')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('dob')">
+                    DOB   @if($sortField==='dob'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Procedure -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('procedure')">
-                    Procedure
-                    @if($sortField === 'procedure')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('procedure')">
+                    Procedure   @if($sortField==='procedure'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Created -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('created_at')">
-                    Created
-                    @if($sortField === 'created_at')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('created_at')">
+                    Created   @if($sortField==='created_at'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Progress -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('progress_percent')">
-                    Progress
-                    @if($sortField === 'progress_percent')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('progress_percent')">
+                    Progress   @if($sortField==='progress_percent'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Current Step -->
-                <th class="px-6 py-3 text-left cursor-pointer"
-                    wire:click="sortBy('current_step')">
-                    Current Step
-                    @if($sortField === 'current_step')
-                        {{ $sortDirection === 'asc' ? '↑' : '↓' }}
-                    @endif
+                <th class="px-6 py-3 text-left cursor-pointer" wire:click="sortBy('current_step')">
+                    Current Step   @if($sortField==='current_step'){{ $sortDirection==='asc'?'↑':'↓' }}@endif
                 </th>
-
-                <!-- Action -->
                 <th class="px-6 py-3 text-right">Action</th>
             </tr>
         </thead>
 
         <tbody class="divide-y divide-green-100 bg-white">
-            @forelse ($referrals as $referral)
-                <tr class="table-row-hover">
-                    <!-- ID -->
-                    <td class="px-6 py-4 font-semibold text-gray-900">
-                        #{{ $referral->id }}
-                    </td>
+        @forelse ($referrals as $referral)
+            @php
+                $dupKey   = strtolower(trim($referral->patient_name)).'|'.($referral->dob ?? '');
+                $isDup    = ($dupCounts[$dupKey] ?? 0) > 1;
+            @endphp
+            <tr class="table-row-hover">
+                <!-- ID -->
+                <td class="px-6 py-4 font-semibold text-gray-900">#{{ $referral->id }}</td>
 
-                    <!-- Patient Name -->
-                    <td class="px-6 py-4 text-gray-700">
-                        {{ $referral->patient_name }}
-                    </td>
+                <!-- Patient Name + duplicate badge -->
+                <td class="px-6 py-4 text-gray-700">
+                    {{ $referral->patient_name }}
+                    @if($isDup)
+                        <span  title="Potential duplicate: same patient &amp; DoB"
+                               class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full
+                                      bg-yellow-100 text-yellow-800 text-xs font-semibold">
+                            ⚠ Duplicate?
+                        </span>
+                    @endif
+                </td>
 
-                    <!-- DOB -->
-                    <td class="px-6 py-4 text-gray-700">
-					{{$referral->dob}}
-                    </td>
+                <!-- DOB -->
+                <td class="px-6 py-4 text-gray-700">{{ $referral->dob }}</td>
 
-                    <!-- Procedure -->
-                    <td class="px-6 py-4 text-gray-700">
-                        {{ $referral->procedure }}
-                    </td>
+                <!-- Procedure -->
+                <td class="px-6 py-4 text-gray-700">{{ $referral->procedure }}</td>
 
+                <!-- Created -->
+                <td class="px-6 py-4 text-gray-700">{{ $referral->created_at->format('Y-m-d') }}</td>
 
+                <!-- Progress -->
+                <td class="px-6 py-4">
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: {{ $referral->progress_percent }}%;"></div>
+                        <div class="progress-label">{{ $referral->progress_percent }}%</div>
+                    </div>
+                    <div class="progress-steps">
+                        {{ $referral->completed_steps }}/{{ $referral->total_steps }} steps
+                    </div>
+                </td>
 
-                    <!-- Created -->
-                    <td class="px-6 py-4 text-gray-700">
-                        {{ $referral->created_at->format('Y-m-d') }}
-                    </td>
+                <!-- Current Step -->
+                <td class="px-6 py-4 text-gray-700">{{ $referral->current_step }}</td>
 
-                    <!-- Progress -->
-                    <td class="px-6 py-4">
-                        <div class="progress-container">
-                            <div class="progress-bar" style="width: {{ $referral->progress_percent }}%;"></div>
-                            <div class="progress-label">{{ $referral->progress_percent }}%</div>
-                        </div>
-                        <div class="progress-steps">
-                            {{ $referral->completed_steps }}/{{ $referral->total_steps }} steps
-                        </div>
-                    </td>
-
-                    <!-- Current Step -->
-                    <td class="px-6 py-4 text-gray-700">
-                        {{ $referral->current_step }}
-                    </td>
-
-                    <!-- Action -->
-                    <td class="px-6 py-4 text-right align-middle">
-                        <a href="{{ route('referrals.workflow.show', $referral->id) }}"
-                           class="action-button">
-                            View
-                        </a>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                        No referrals found.
-                    </td>
-                </tr>
-            @endforelse
+                <!-- Action -->
+                <td class="px-6 py-4 text-right">
+                    <a href="{{ route('referrals.workflow.show', $referral->id) }}"
+                       class="action-button">View</a>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="8" class="px-6 py-12 text-center text-gray-500">No referrals found.</td>
+            </tr>
+        @endforelse
         </tbody>
     </table>
 </div>
 
 @if($referrals->hasPages())
-    <div class="mt-6">
-        {{ $referrals->links() }}
-    </div>
+    <div class="mt-6">{{ $referrals->links() }}</div>
 @endif
 
-
-
-    <!-- Styles -->
-    <style>
+<style>
         /* Table Row Hover */
         .table-row-hover {
             transition: all 0.3s ease;
@@ -276,6 +237,8 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.5);
         }
-    </style>
-
+.table-row-hover{transition:all .3s;cursor:pointer}
+.table-row-hover:hover{background:#ecfdf5;transform:translateY(-1px) scale(1.01);box-shadow:0 4px 12px rgba(34,197,94,.15)}
+/* duplicate badge colours already declared inline */
+</style>
 </div>

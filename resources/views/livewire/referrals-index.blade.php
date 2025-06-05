@@ -1,221 +1,98 @@
-<div>
-    <div class="referral-container">
-        <h2>Referrals Management</h2>
-        <p class="subtitle">Monitor patient referrals with real-time updates.</p>
+<div class="referral-container">
+    {{-- ───── Filters / Search ───── --}}
+    <div class="filter-search-bar">
+        <label class="text-sm mr-1">Statsssus:</label>
+        <select wire:model="statusFilter">
+            <option value="all">All</option>
+            <option value="in_progress">In&nbsp;Progress</option>
+            <option value="completed">Completed</option>
+        </select>
 
-        <!-- Filter & Search Bar -->
-        <div class="filter-search-bar">
-            <label for="statusFilter">Status:</label>
-            <select id="statusFilter" wire:model="statusFilter">
-                <option value="all">All</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-            </select>
-
-            <input
-                id="search"
-                type="text"
-                wire:model.debounce.500ms="search"
-                placeholder="Search by Referral ID, Patient..."
-            />
-        </div>
-
-        <!-- Referrals Table -->
-        <table class="nice-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Patient Name</th>
-                    <th>DoB</th> 
-                    <th>Status</th>
-                    <th>Progress</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($referrals as $referral)
-                    @php
-                        $statusClass = match($referral->status) {
-                            'in_progress' => 'status-inprogress',
-                            'completed'   => 'status-completed',
-                            default       => 'status-default',
-                        };
-
-                        // Calculate progress percentage
-                        $totalSteps = $referral->workflow->steps->count();
-                        $completedSteps = $referral->progress->where('status', 'completed')->count();
-                        $progressPercent = $totalSteps 
-                            ? ($completedSteps / $totalSteps) * 100 
-                            : 0;
-
-                        // Retrieve info from first step if available
-                        $patientName = '—';
-                        $facilityName = '—';
-
-                        $firstStep = $referral->progress->first();
-                        if($firstStep && $firstStep->notes) {
-                            $notesData = json_decode($firstStep->notes, true);
-
-                            // Build patient name
-                            $patientName = ($notesData['first_name'] ?? '') 
-                                           . ' ' 
-                                           . ($notesData['last_name'] ?? '');
-                            $patientName = trim($patientName) ?: '—';
-
-                            // Facility (if exists in notes)
-                            $facilityName = $notesData['facility'] 
-                                            ?? '—';
-                        }
-                    @endphp
-                    <tr>
-                        <td>#{{ $referral->id }}</td>
-                        <td>{{ $patientName }}</td>
-                        <td>{{ $facilityName }}</td> <!-- NEW CELL -->
-                        <td>
-                            <span class="status-badge {{ $statusClass }}">
-                                {{ ucfirst(str_replace('_', ' ', $referral->status)) }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: {{ $progressPercent }}%;"></div>
-                                </div>
-                                <small class="progress-text">
-                                    {{ $completedSteps }}/{{ $totalSteps }} steps completed
-                                </small>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="no-data">No referrals found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        <!-- Pagination -->
-        @if($referrals->hasPages())
-            <div class="pagination">
-                {{ $referrals->links() }}
-            </div>
-        @endif
+        <input type="text"
+               class="flex-1"
+               wire:model.debounce.500ms="search"
+               placeholder="Search by Referral ID, Patient…">
     </div>
 
-    <style>
-    .referral-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-    }
+    {{-- ───── Table ───── --}}
+    <table class="nice-table">
+        <thead>
+            <tr>
+                <th wire:click="sortBy('id')"            class="cursor-pointer">ID</th>
+                <th wire:click="sortBy('patient_name')"  class="cursor-pointer">Patient</th>
+                <th wire:click="sortBy('patient_dob')"   class="cursor-pointer">DoB</th>
+                <th wire:click="sortBy('status')"        class="cursor-pointer">Status</th>
+                <th>Progress</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($referrals as $r)
+                @php
+                    $badge = match($r->status) {
+                        'in_progress' => 'status-inprogress',
+                        'completed'   => 'status-completed',
+                        default       => 'status-default',
+                    };
+                @endphp
+                <tr>
+                    <td>#{{ $r->id }}</td>
 
-    .referral-container h2 {
-      font-size: 26px;
-      margin-bottom: 5px;
-    }
+                    {{-- Patient + duplicate flag --}}
+                    <td>
+                        {{ $r->patient_name }}
+                        @if ($r->is_duplicate)
+                            <span  title="Potential duplicate (same name &amp; DoB)"
+                                   class="ml-1 bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                                   ⚠ Duplicate?
+                            </span>
+                        @endif
+                    </td>
 
-    .subtitle {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 20px;
-    }
+                    <td>{{ $r->patient_dob }}</td>
 
-    .filter-search-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+                    <td>
+                        <span class="status-badge {{ $badge }}">
+                            {{ ucfirst(str_replace('_',' ',$r->status)) }}
+                        </span>
+                    </td>
 
-    .filter-search-bar select,
-    .filter-search-bar input {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      outline: none;
-    }
+                    {{-- progress bar --}}
+                    <td>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                     style="width: {{ $r->progress_percent }}%"></div>
+                            </div>
+                            <small class="progress-text">
+                                {{ $r->completed_steps }}/{{ $r->total_steps }}
+                            </small>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="5" class="no-data">No referrals found.</td></tr>
+            @endforelse
+        </tbody>
+    </table>
 
-    .nice-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .nice-table th,
-    .nice-table td {
-      padding: 10px;
-      border: 1px solid #e2e8f0;
-      text-align: left;
-    }
-
-    .nice-table th {
-      background-color: #f5f7fa;
-    }
-
-    .nice-table tr:hover {
-      background-color: #fafcff;
-    }
-
-    .progress-container {
-      width: 100%;
-      background-color: #e4eaf1;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      width: 100%;
-      background-color: #e4ebf2;
-      height: 8px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      background-color: #4f93e6;
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .no-data {
-      padding: 15px;
-      text-align: center;
-      color: #999;
-      font-style: italic;
-    }
-
-    .pagination .links a,
-    .pagination .links span {
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-      color: #4f93e6;
-      margin-right: 4px;
-    }
-
-    .pagination .links span {
-      color: #999;
-    }
-
-    .status-inprogress {
-      background-color: #e0f0ff;
-      color: #007bff;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .status-completed {
-      background-color: #d4f4dc;
-      color: #0f9b5a;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .status-default {
-      background-color: #f0f0f0;
-      color: #777;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    </style>
+    {{-- Pagination --}}
+    <div class="mt-6">{{ $referrals->links() }}</div>
 </div>
+
+<style>
+.referral-container{max-width:900px;margin:auto;padding:20px;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;color:#333}
+.filter-search-bar{display:flex;gap:10px;margin-bottom:20px}
+.filter-search-bar select,.filter-search-bar input{padding:8px;border:1px solid #ccc;border-radius:4px}
+.nice-table{width:100%;border-collapse:collapse}
+.nice-table th,.nice-table td{padding:10px;border:1px solid #e2e8f0;text-align:left}
+.nice-table th{background:#f5f7fa}
+.nice-table tr:hover{background:#fafcff}
+.status-badge{padding:4px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.status-inprogress{background:#e0f0ff;color:#007bff}
+.status-completed{background:#d4f4dc;color:#0f9b5a}
+.status-default{background:#f0f0f0;color:#777}
+.progress-container{width:100%;background:#e4eaf1;border-radius:8px}
+.progress-bar{height:8px;background:#e4eaf1;border-radius:8px;overflow:hidden}
+.progress-fill{height:100%;background:#4f93e6;transition:width .3s}
+.no-data{padding:15px;text-align:center;color:#999;font-style:italic}
+</style>
