@@ -9,7 +9,8 @@
             'Reason & Diagnosis',
             'Clinical Summary',
             'Clinical Docs'
-        ]
+        ],
+        referralType: ''     //  <— new
     }"
 >
     {{-- =================== PAGE TITLE =================== --}}
@@ -156,36 +157,71 @@
             </div>
         </section>
 
-        {{-- ───────── STEP 3 | REASON & DIAGNOSIS ───────── --}}
-        <section x-show="step === 3" x-cloak x-transition>
-            <h3 class="form-step-title">Reason & Diagnosis</h3>
-            <div class="mb-4">
-                <label class="form-label">Reason for Referral <span class="required-asterisk">*</span></label>
-                <textarea name="reason" class="form-textarea-field" required></textarea>
-            </div>
-            <div class="mb-4">
-                <label class="form-label">Diagnosis / ICD Code <span class="required-asterisk">*</span></label>
-                <input type="text" name="diagnosis" class="form-input-field" required>
-            </div>
-            <div class="mb-4">
-                <label class="form-label">GI Procedure(s) <span class="required-asterisk">*</span></label>
-                <select name="gi_procedures[]" multiple class="form-input-field h-40" required>
-                    @foreach([
-                        'EGD','Colonoscopy','EGD with Biopsy','Colonoscopy with Biopsy',
-                        'Colonoscopy with Polypectomy','Flexible Sigmoidoscopy','PEG Tube Placement',
-                        'Esophageal Dilation','Bravo pH Monitoring','Esophageal Manometry',
-                        'Band Ligation','Hemorrhoid Treatment','Capsule Endoscopy','ERCP','Other'
-                    ] as $option)
-                        <option>{{ $option }}</option>
-                    @endforeach
-                </select>
-            </div>
+{{-- ───────── STEP 3 | REASON & DIAGNOSIS ───────── --}}
+<section x-show="step === 3" x-cloak x-transition>
+    <h3 class="form-step-title">Reason & Diagnosis</h3>
 
-            <div class="mt-6 flex justify-between">
-                <button type="button" class="btn-gray" @click="step--">Previous</button>
-                <button type="button" class="btn-green" @click="step++">Next</button>
-            </div>
-        </section>
+    {{-- 3-A  Referral type --}}
+    <div class="mb-4">
+        <label class="form-label">
+            Referral Type <span class="required-asterisk">*</span>
+        </label>
+        <select
+            x-model="referralType"
+            name="referral_type"
+            class="form-input-field"
+            required
+        >
+            <option value="">Select</option>
+            <option value="procedure">Procedure</option>
+            <option value="consult">Consult</option>
+        </select>
+    </div>
+
+    {{-- 3-B  Reason / Diagnosis (unchanged) --}}
+    <div class="mb-4">
+        <label class="form-label">Reason for Referral <span class="required-asterisk">*</span></label>
+        <textarea name="reason" class="form-textarea-field" required></textarea>
+    </div>
+    <div class="mb-4">
+        <label class="form-label">Diagnosis / ICD Code <span class="required-asterisk">*</span></label>
+        <input type="text" name="diagnosis" class="form-input-field" required>
+    </div>
+
+    {{-- 3-C  Procedures list (only if “procedure”) --}}
+    <div class="mb-4"
+         x-show="referralType === 'procedure'"
+         x-cloak>
+        <label class="form-label">GI Procedure(s) <span class="required-asterisk">*</span></label>
+
+        <select  name="gi_procedures[]"
+                 multiple
+                 class="form-input-field h-40"
+                 :required="referralType === 'procedure'">
+            @foreach([
+                'EGD','Colonoscopy','EGD with Biopsy','Colonoscopy with Biopsy',
+                'Colonoscopy with Polypectomy','Flexible Sigmoidoscopy','PEG Tube Placement',
+                'Esophageal Dilation','Bravo pH Monitoring','Esophageal Manometry',
+                'Band Ligation','Hemorrhoid Treatment','Capsule Endoscopy','ERCP','Other'
+            ] as $option)
+                <option>{{ $option }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    {{-- 3-D  Hidden fallback when it’s a consult --}}
+<template x-if="referralType === 'consult'">
+    <input type="hidden"
+           name="gi_procedures[]"
+           value="Consult">
+</template>
+
+    <div class="mt-6 flex justify-between">
+        <button type="button" class="btn-gray" @click="step--">Previous</button>
+        <button type="button" class="btn-green" @click="step++">Next</button>
+    </div>
+</section>
+
 
         {{-- ───────── STEP 4 | CLINICAL SUMMARY ───────── --}}
         <section x-show="step === 4" x-cloak x-transition>
