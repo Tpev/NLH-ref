@@ -82,11 +82,7 @@ class WorkflowStepSeeder extends Seeder
     ['name' => 'anesthesia_difficult_airway','type'=>'checkbox','label'=>'Anesthesia – Known difficult airway'],
     ['name' => 'anesthesia_msk_limit_neck','type' => 'checkbox', 'label' => 'Anesthesia – Limited neck ROM (RA, AS, etc.)'],
 
-    // 10. Pediatrics
-    ['name' => 'peds_age_lt12m',           'type' => 'checkbox', 'label' => 'Pediatrics – Age < 12 months'],
-    ['name' => 'peds_tonsillectomy_lt3y',  'type' => 'checkbox', 'label' => 'Pediatrics – Tonsillectomy patient < 3 yrs'],
-    ['name' => 'peds_mh_family',           'type' => 'checkbox', 'label' => 'Pediatrics – Family history malignant hyperthermia'],
-    ['name' => 'peds_congenital_comorbid', 'type' => 'checkbox', 'label' => 'Pediatrics – Congenital / complex comorbidities'],
+
 
     // 11. BMI
     ['name' => 'bmi_gt50',                 'type' => 'checkbox', 'label' => 'BMI – > 50'],
@@ -99,19 +95,52 @@ class WorkflowStepSeeder extends Seeder
     // 13. Mobility
     ['name' => 'mobility_nonambulatory_hoyer','type'=>'checkbox','label'=>'Mobility – Non-ambulatory / needs Hoyer lift'],
 
-    /* ───────────────────── APPENDIX B (Outpatient Total-Joint) ───────────────────── */
 
-    ['name' => 'joint_bmi_gt40',           'type' => 'checkbox', 'label' => 'T-Joint – BMI > 40'],
-    ['name' => 'joint_no_home_support',    'type' => 'checkbox', 'label' => 'T-Joint – No home support for 7 days'],
-    ['name' => 'joint_not_ambulating',     'type' => 'checkbox', 'label' => 'T-Joint – Not ambulating with cane pre-op'],
-    ['name' => 'joint_mets_lt4',           'type' => 'checkbox', 'label' => 'T-Joint – METs < 4'],
-    ['name' => 'joint_resp_card_compromise','type'=>'checkbox','label'=>'T-Joint – Respiratory / cardiac compromise'],
-    ['name' => 'joint_asa_iii_or_more',    'type' => 'checkbox', 'label' => 'T-Joint – ASA III + (needs approval)'],
-    ['name' => 'joint_untreated_osa',      'type' => 'checkbox', 'label' => 'T-Joint – Untreated obstructive sleep apnea'],
-    ['name' => 'joint_chronic_opioids',    'type' => 'checkbox', 'label' => 'T-Joint – Chronic opioids / Suboxone'],
-    ['name' => 'joint_age_ge75',           'type' => 'checkbox', 'label' => 'T-Joint – Age ≥ 75 yrs'],
-    ['name' => 'joint_a1c_gt75',           'type' => 'checkbox', 'label' => 'T-Joint – Hgb A1c > 7.5 %'],
-    ['name' => 'joint_urinary_retention_history','type'=>'checkbox','label'=>'T-Joint – History of urinary retention'],
+/* ───────────────  Propofol / Anesthesia-Review criteria (new)  ─────────────── */
+
+    // Age / BMI
+    ['name' => 'prop_age_ge80',            'type' => 'checkbox', 'label' => 'Propofol – Age ≥ 80 yr (no comorbidity req)'],
+    ['name' => 'prop_age_ge80_comorb',     'type' => 'checkbox', 'label' => 'Propofol – Age ≥ 80 yr with comorbidities'],
+    ['name' => 'prop_bmi_lt20',            'type' => 'checkbox', 'label' => 'Propofol – BMI < 20'],
+    ['name' => 'prop_bmi_gt35',            'type' => 'checkbox', 'label' => 'Propofol – BMI > 35'],
+    ['name' => 'prop_bmi_45_55',           'type' => 'checkbox', 'label' => 'Propofol – BMI 45-55 (EGD/colono: OR)'],
+
+    // Respiratory
+    ['name' => 'prop_difficult_intubation','type' => 'checkbox', 'label' => 'Propofol – Prior difficult airway / intubation'],
+    ['name' => 'prop_severe_copd',         'type' => 'checkbox', 'label' => 'Propofol – Severe COPD'],
+    ['name' => 'prop_pulm_htn',            'type' => 'checkbox', 'label' => 'Propofol – Pulmonary hypertension'],
+    ['name' => 'prop_sleep_apnea',         'type' => 'checkbox', 'label' => 'Propofol – Sleep apnea (± CPAP)'],
+    ['name' => 'prop_steroid_lung',        'type' => 'checkbox', 'label' => 'Propofol – On oral steroids for lung disease'],
+    ['name' => 'prop_home_oxygen',         'type' => 'checkbox', 'label' => 'Propofol – Home oxygen therapy'],
+
+    // Cardiac / vascular
+    ['name' => 'prop_recent_cardio_event','type' => 'checkbox', 'label' => 'Propofol – Cardiac / CV / TE event < 1 yr'],
+    ['name' => 'prop_des_gt6m',            'type' => 'checkbox', 'label' => 'Propofol – DES (only) > 6 months'],
+    ['name' => 'prop_aortic_stenosis',     'type' => 'checkbox', 'label' => 'Propofol – Mod/sev aortic stenosis'],
+    ['name' => 'prop_angina_unstable',     'type' => 'checkbox', 'label' => 'Propofol – Unstable / worsening angina'],
+    ['name' => 'prop_ef_le45',             'type' => 'checkbox', 'label' => 'Propofol – LV EF ≤ 45 %'],
+    ['name' => 'prop_cardiomyopathy',      'type' => 'checkbox', 'label' => 'Propofol – Cardiomyopathy'],
+
+    // Renal / GI / other medical
+    ['name' => 'prop_ckd_stage4',          'type' => 'checkbox', 'label' => 'Propofol – CKD stage IV'],
+    ['name' => 'prop_esophagectomy',       'type' => 'checkbox', 'label' => 'Propofol – Post-esophagectomy'],
+    ['name' => 'prop_esophageal_varices',  'type' => 'checkbox', 'label' => 'Propofol – Esophageal varices'],
+    ['name' => 'prop_tortuous_colon',      'type' => 'checkbox', 'label' => 'Propofol – Prior difficult colon / Crohn’s flare'],
+    ['name' => 'prop_dementia',            'type' => 'checkbox', 'label' => 'Propofol – Dementia (any)'],
+
+    // Social / environment
+    ['name' => 'prop_congregate_setting',  'type' => 'checkbox', 'label' => 'Propofol – Lives in congregate setting'],
+
+    // Medications & substance use
+    ['name' => 'prop_narcotic_use',        'type' => 'checkbox', 'label' => 'Propofol – Active narcotic use'],
+    ['name' => 'prop_benzo_use',           'type' => 'checkbox', 'label' => 'Propofol – Benzodiazepine use'],
+    ['name' => 'prop_sleep_aids',          'type' => 'checkbox', 'label' => 'Propofol – Sleep-aid use < 40 yr'],
+    ['name' => 'prop_methadone_suboxone',  'type' => 'checkbox', 'label' => 'Propofol – Methadone / Suboxone / Naltrexone'],
+    ['name' => 'prop_sedation_resistance', 'type' => 'checkbox', 'label' => 'Propofol – Prior high-dose sedation needed'],
+    ['name' => 'prop_opioid_use_disorder', 'type' => 'checkbox', 'label' => 'Propofol – Opioid use disorder'],
+    ['name' => 'prop_alcohol_use_disorder','type' => 'checkbox', 'label' => 'Propofol – Active alcohol use disorder (< 1 yr)'],
+    ['name' => 'prop_daily_marijuana',     'type' => 'checkbox', 'label' => 'Propofol – Daily marijuana use'],
+
 ],
 
                 ],
