@@ -18,6 +18,11 @@
 					
 					<x-nav-link href="{{ route('referrals.index') }}" :active="request()->routeIs('referrals.index')">
                         {{ __('Referrals') }}
+                    </x-nav-link>					
+					
+					
+					<x-nav-link href="{{ route('reports.referrals') }}" :active="request()->routeIs('reports.referrals')">
+                        {{ __('Report') }}
                     </x-nav-link>
 
                 </div>

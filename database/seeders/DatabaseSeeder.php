@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             WorkflowSeeder::class,
+			UserSeeder::class,
             WorkflowStageSeeder::class,
             WorkflowStepSeeder::class,
-            ReferralSeeder::class,
             ReferralProgressSeeder::class,
-            UserSeeder::class,
+            ReferralSeeder::class,
         ]);
     }
 }

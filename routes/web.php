@@ -6,6 +6,9 @@ use App\Livewire\ReferralWorkflowShow;
 use App\Livewire\Dashboard;
 use App\Livewire\Referrals\GiBookingFormComponent;
 use App\Http\Controllers\ReferralSubmissionController;
+use App\Http\Controllers\ReferralReportController;
+
+
 
 Route::post('/referrals/gi/store', [ReferralSubmissionController::class, 'store'])->name('referral.store');
 
@@ -34,7 +37,7 @@ Route::redirect('/', '/login');
 
 // Protected Routes (Only accessible by authenticated users)
 Route::middleware(['auth', 'verified'])->group(function () {
-
+   Route::get('/reports/referrals', [ReferralReportController::class, 'index'])->name('reports.referrals');
     Route::view('/med-reconciliation', 'med-reconciliation')->name('med-reconciliation');
 
     Route::get('/patient-timeline', function () {
